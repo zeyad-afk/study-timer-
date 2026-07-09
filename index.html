@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Caveat:wght@500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0908;
+    --bg-panel:#131110;
+    --bg-panel-2:#1b1815;
+    --line:rgba(255,255,255,0.08);
+    --line-strong:rgba(255,255,255,0.16);
+    --white:#f4f1ec;
+    --dim:#8f897f;
+    --dimmer:#5c574f;
+    --red:#ff4b26;
+    --red-bright:#ff7a52;
+    --red-dim:#a8341a;
+    --red-glow:rgba(255,75,38,0.35);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{ margin:0; padding:0; background:var(--bg); color:var(--white); }
+
+  body{
+    font-family:'Space Grotesk', sans-serif;
+    position:relative;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      repeating-linear-gradient(90deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent calc(20% - 1px));
+    opacity:0.5;
+  }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; }
+  ::selection{ background:var(--red); color:var(--bg); }
+  :focus-visible{ outline:2px solid var(--red-bright); outline-offset:3px; }
+
+  .wrap{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 5vw; }
+
+  /* ---------------- NAV ---------------- */
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:2.2rem 0 1.4rem;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:0.7rem; }
+  .brand svg{ width:30px; height:30px; }
+  .brand .word{ font-size:1.05rem; font-weight:600; line-height:1.05; }
+  .brand .word small{ display:block; font-size:0.6rem; letter-spacing:0.22em; color:var(--dim); font-weight:500; }
+
+  .nav-index{ display:flex; gap:2.4rem; }
+  .nav-index .item{ font-size:0.72rem; color:var(--dim); max-width:96px; }
+  .nav-index .item b{ display:block; color:var(--red); font-family:'JetBrains Mono', monospace; font-size:0.68rem; margin-bottom:0.3rem; }
+  @media (max-width:720px){ .nav-index{ display:none; } }
+
+  .nav-dot{
+    width:44px; height:44px; border-radius:50%;
+    background:var(--red);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 0 24px var(--red-glow);
+    border:none;
+  }
+  .nav-dot svg{ width:18px; height:18px; }
+
+  .nav-right{ display:flex; align-items:center; gap:0.7rem; flex-shrink:0; }
+
+  .reset-all-btn{
+    width:44px; height:44px; border-radius:50%;
+    background:none;
+    border:1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:border-color 0.2s ease;
+  }
+  .reset-all-btn svg{ width:16px; height:16px; stroke:var(--dim); transition:stroke 0.2s ease; }
+  .reset-all-btn:hover{ border-color:var(--red); }
+  .reset-all-btn:hover svg{ stroke:var(--red-bright); }
+
+  /* ---------------- HERO ---------------- */
+  .hero{ padding:5.5rem 0 4rem; position:relative; }
+
+  .eyebrow-row{
+    display:flex; align-items:center; gap:0.8rem;
+    margin-bottom:1.6rem;
+  }
+  .eyebrow-row .rule{ width:34px; height:1px; background:var(--red); }
+  .eyebrow-row span{ font-family:'JetBrains Mono', monospace; font-size:0.7rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--dim); }
+
+  h1.headline{
+    margin:0;
+    font-weight:500;
+    line-height:0.98;
+    font-size:clamp(2.4rem, 6.6vw, 5.1rem);
+  }
+  h1.headline .thin{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-style:normal;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    color:var(--white);
+  }
+  h1.headline .bold{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    color:var(--white);
+  }
+  h1.headline .accent{
+    font-family:'Caveat', cursive;
+    color:var(--red-bright);
+    font-size:0.42em;
+    display:inline-block;
+    transform:rotate(-6deg);
+    margin:0 0.15em;
+    vertical-align:middle;
+  }
+
+  .hero-lower{
+    margin-top:3rem;
+    display:flex;
+    align-items:center;
+    gap:3rem;
+    flex-wrap:wrap;
+  }
+
+  .badge{
+    position:relative;
+    width:132px; height:132px;
+    flex-shrink:0;
+  }
+  .badge .spin{
+    animation:spin 16s linear infinite;
+    transform-origin:50% 50%;
+  }
+  @media (prefers-reduced-motion:reduce){ .badge .spin{ animation:none; } }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .badge .center-ic{ width:26px; height:26px; }
+
+  .hero-copy{ max-width:340px; }
+  .hero-copy p{ margin:0; color:var(--dim); font-size:0.92rem; line-height:1.6; }
+
+  .hero-meta{
+    margin-left:auto;
+    display:flex;
+    align-items:flex-start;
+    gap:2.4rem;
+    flex-wrap:wrap;
+  }
+  .hero-meta .col b{
+    display:block;
+    font-size:0.66rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:0.5rem;
+  }
+  .hero-meta .col span{ font-size:0.86rem; color:var(--white); line-height:1.5; display:block; }
+
+  .legend{ display:flex; gap:0.5rem; margin-top:0.6rem; }
+  .legend i{ width:9px; height:9px; border-radius:50%; display:inline-block; background:var(--red); opacity:0.35; }
+  .legend i:nth-child(1){ opacity:1; }
+  .legend i:nth-child(2){ opacity:0.75; }
+  .legend i:nth-child(3){ opacity:0.5; }
+  .legend i:nth-child(4){ opacity:0.3; }
+
+  .see-below{
+    display:flex; align-items:center; gap:0.5rem;
+    margin-top:2.6rem;
+    background:none; border:none; cursor:pointer;
+    color:var(--dim);
+    font-size:0.78rem;
+    letter-spacing:0.02em;
+  }
+  .see-below:hover{ color:var(--white); }
+  .see-below svg{ width:12px; height:12px; }
+
+  /* ---------------- TOPIC LIST (page 1) ---------------- */
+  .topics{
+    padding:1rem 0 6rem;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .topic-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:stretch;
+    gap:0;
+    border-top:1px solid var(--line);
+    cursor:pointer;
+    background:none;
+    border-left:none; border-right:none; border-bottom:none;
+    text-align:left;
+    color:inherit;
+    padding:0;
+    transition:background 0.25s ease;
+  }
+  .topic-row:last-child{ border-bottom:1px solid var(--line); }
+  .topic-row:hover{ background:rgba(255,255,255,0.02); }
+  .topic-row:hover .topic-visual svg .accent-stroke{ stroke:var(--red-bright); }
+  .topic-row:hover .view-ring{ border-color:var(--red-bright); }
+
+  .topic-text{
+    padding:2.6rem 2.4rem 2.6rem 0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:0.9rem;
+  }
+
+  .topic-idx-row{ display:flex; align-items:center; gap:0.7rem; }
+  .topic-idx{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--red); }
+  .topic-date{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--dimmer); }
+
+  .topic-code{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(1.7rem, 3vw, 2.3rem);
+    letter-spacing:-0.01em;
+  }
+
+  .topic-name{
+    font-family:'Fraunces', serif;
+    font-weight:400;
+    font-style:italic;
+    color:var(--dim);
+    font-size:1rem;
+  }
+
+  .topic-progress{
+    display:flex;
+    align-items:center;
+    gap:0.7rem;
+    margin-top:0.3rem;
+  }
+  .topic-progress .track{ width:120px; height:4px; background:var(--bg-panel-2); border-radius:2px; overflow:hidden; }
+  .topic-progress .fill{ height:100%; background:var(--red); width:0%; transition:width 0.4s ease; }
+  .topic-progress .lbl{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color:var(--dim); }
+
+  .topic-visual{
+    position:relative;
+    min-height:190px;
+    background:var(--bg-panel);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .topic-visual::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 26px),
+      repeating-linear-gradient(90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 26px);
+    opacity:0.5;
+  }
+  .topic-visual svg{ position:relative; width:72%; height:72%; }
+  .topic-visual .accent-stroke{ stroke:var(--red); transition:stroke 0.25s ease; }
+
+  .view-ring{
+    position:absolute;
+    right:16px; bottom:16px;
+    width:58px; height:58px;
+    border-radius:50%;
+    border:1px dashed var(--line-strong);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.6rem;
+    letter-spacing:0.05em;
+    color:var(--dim);
+    transition:border-color 0.25s ease;
+  }
+
+  @media (max-width:760px){
+    .topic-row{ grid-template-columns:1fr; }
+    .topic-visual{ order:-1; min-height:160px; }
+    .topic-text{ padding:1.8rem 0; }
+  }
+
+  .footer-note{
+    text-align:center;
+    color:var(--dimmer);
+    font-size:0.72rem;
+    padding-bottom:3rem;
+  }
+
+  /* ==================== PAGE 2 : STUDY SESSION ==================== */
+  #page-study{ display:none; }
+
+  .study-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:2.2rem 0 2rem;
+    border-bottom:1px solid var(--line);
+  }
+
+  .back-btn{
+    display:flex; align-items:center; gap:0.5rem;
+    background:none; border:none; cursor:pointer;
+    color:var(--dim); font-size:0.82rem;
+  }
+  .back-btn:hover{ color:var(--white); }
+  .back-btn svg{ width:14px; height:14px; }
+
+  .study-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    letter-spacing:0.06em;
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+  }
+  .study-title .dot{ width:7px; height:7px; border-radius:50%; background:var(--red); }
+
+  .session-hero{
+    padding:3.4rem 0 1rem;
+    text-align:center;
+  }
+  .session-hero h2{
+    margin:0;
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-style:italic;
+    color:var(--dim);
+    font-size:1rem;
+  }
+  .session-hero .topic-big{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(1.9rem, 4vw, 2.9rem);
+    margin-top:0.3rem;
+  }
+
+  .timers-row{
+    display:flex;
+    justify-content:center;
+    gap:3.4rem;
+    flex-wrap:wrap;
+    padding:3rem 0 1rem;
+  }
+
+  .timer-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1.1rem;
+    width:240px;
+  }
+
+  .dial-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--dim);
+  }
+
+  .dial{
+    position:relative;
+    width:196px; height:196px;
+    border-radius:50%;
+    background:var(--bg-panel);
+    border:1px solid var(--line-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dial .ring{
+    position:absolute; inset:0; border-radius:50%;
+  }
+  .dial .ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .dial .ring circle{ fill:none; stroke-width:2; }
+  .dial .ring .track{ stroke:var(--line); }
+  .dial .ring .prog{ stroke:var(--red); stroke-linecap:round; transition:stroke-dashoffset 1s linear; }
+
+  .dial .face{
+    position:relative;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    z-index:1;
+  }
+  .dial .time{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    font-size:1.55rem;
+    color:var(--white);
+  }
+  .dial .caption{
+    margin-top:0.3rem;
+    font-size:0.6rem;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    color:var(--dimmer);
+  }
+
+  .dial.active{ border-color:var(--red); box-shadow:0 0 0 1px var(--red), 0 0 30px var(--red-glow); }
+  .dial.active .time{ animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:0.65; } }
+  @media (prefers-reduced-motion:reduce){ .dial.active .time{ animation:none; } }
+
+  .toggle-btn{
+    border:1px solid var(--line-strong);
+    background:none;
+    color:var(--white);
+    border-radius:999px;
+    padding:0.65rem 1.5rem;
+    font-size:0.82rem;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    min-width:150px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:500;
+    transition:all 0.2s ease;
+  }
+  .toggle-btn:hover{ border-color:var(--red); color:var(--red-bright); }
+  .toggle-btn.is-running{
+    background:var(--red);
+    border-color:var(--red);
+    color:var(--bg);
+  }
+  .toggle-btn.is-running:hover{ color:var(--bg); }
+
+  .reset-row{ text-align:center; padding:1rem 0 0; }
+  .link-btn{
+    background:none; border:none; cursor:pointer;
+    color:var(--dimmer);
+    font-size:0.76rem;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .link-btn:hover{ color:var(--red-bright); }
+
+  .goals-wrap{ padding:3.2rem 0 5rem; display:flex; justify-content:center; }
+  .goals-card{
+    width:100%;
+    max-width:640px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-left:2px solid var(--red);
+    border-radius:2px;
+    padding:1.8rem 2rem 2rem;
+  }
+  .goals-card label{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:1rem;
+  }
+  .goals-card textarea{
+    width:100%;
+    min-height:150px;
+    resize:vertical;
+    border:none;
+    background:transparent;
+    color:var(--white);
+    font-family:'Space Grotesk', sans-serif;
+    font-size:0.96rem;
+    line-height:1.7;
+    outline:none;
+  }
+  .goals-card textarea::placeholder{ color:var(--dimmer); }
+  .save-hint{ margin-top:0.6rem; font-size:0.68rem; color:var(--dimmer); height:1em; font-family:'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===================== NAV ===================== -->
+  <div class="nav">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14.5" stroke="#ff4b26" stroke-width="1.4"/>
+        <path d="M16 8 V16 L21 19" stroke="#ff4b26" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="word">STUDY.<br><small>DESK &middot; WEEKLY TRACKER</small></span>
+    </div>
+    <div class="nav-index">
+      <div class="item"><b>01</b>pick a topic</div>
+      <div class="item"><b>02</b>run the clock</div>
+      <div class="item"><b>03</b>log your goals</div>
+    </div>
+    <div class="nav-right">
+      <button class="reset-all-btn" id="reset-all-btn" type="button" title="Reset all topics" aria-label="Reset all topics">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M20 4v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="nav-dot">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="#0a0908" stroke-width="1.6"/>
+          <path d="M12 7v5l3.2 2" stroke="#0a0908" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE 1 ===================== -->
+  <section id="page-select">
+
+    <div class="hero">
+      <div class="eyebrow-row">
+        <div class="rule"></div>
+        <span>Four subjects, one weekly goal</span>
+      </div>
+
+      <h1 class="headline">
+        <span class="bold">select</span><span class="thin">&nbsp;WHICH</span><br>
+        <span class="thin">topic&nbsp;</span><span class="accent">you'd like</span><br>
+        <span class="bold">TO STUDY</span>
+      </h1>
+
+      <div class="hero-lower">
+        <div class="badge">
+          <svg class="spin" viewBox="0 0 132 132" width="132" height="132">
+            <defs>
+              <path id="circlePath" d="M 66,66 m -50,0 a 50,50 0 1,1 100,0 a 50,50 0 1,1 -100,0"/>
+            </defs>
+            <circle cx="66" cy="66" r="50" fill="none" stroke="#ff4b26" stroke-width="1"/>
+            <text font-family="JetBrains Mono, monospace" font-size="9.3" letter-spacing="2.5" fill="#ff4b26">
+              <textPath href="#circlePath" startOffset="0%">
+                TEN HOURS A WEEK &middot; TEN HOURS A WEEK &middot;
+              </textPath>
+            </text>
+          </svg>
+          <svg class="center-ic" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+            <circle cx="12" cy="12" r="10" stroke="#ff4b26" stroke-width="1.3"/>
+            <path d="M12 7v5l3.4 2.2" stroke="#ff4b26" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="hero-copy">
+          <p>Every topic below gets its own ten-hour weekly clock, a break timer that pauses it, and a place to write what you're aiming to finish.</p>
+        </div>
+
+        <div class="hero-meta">
+          <div class="col">
+            <b>Subjects</b>
+            <span>Algorithms, data, databases, calculus</span>
+            <div class="legend"><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="see-below" id="see-below-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M12 20l-6-6M12 20l6-6" stroke="#ff4b26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        See all topics below
+      </button>
+    </div>
+
+    <div class="topics" id="topic-list"></div>
+
+    <p class="footer-note">Progress and goals are saved on this device, per topic.</p>
+  </section>
+
+  <!-- ===================== PAGE 2 ===================== -->
+  <section id="page-study">
+    <div class="study-nav">
+      <button class="back-btn" id="back-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        All topics
+      </button>
+      <span class="study-title"><span class="dot"></span><span id="study-topic-label"></span></span>
+    </div>
+
+    <div class="session-hero">
+      <h2>this week's session &mdash;</h2>
+      <div class="topic-big" id="study-topic-big"></div>
+    </div>
+
+    <div class="timers-row">
+      <div class="timer-card">
+        <span class="dial-label">Study &middot; counts down</span>
+        <div class="dial" id="study-dial">
+          <div class="ring">
+            <svg viewBox="0 0 196 196">
+              <circle class="track" cx="98" cy="98" r="90"/>
+              <circle class="prog" id="study-ring-prog" cx="98" cy="98" r="90"/>
+            </svg>
+          </div>
+          <div class="face">
+            <span class="time" id="study-time">10:00:00</span>
+            <span class="caption">remaining</span>
+          </div>
+        </div>
+        <button class="toggle-btn" id="study-toggle" type="button">Start study</button>
+      </div>
+
+      <div class="timer-card">
+        <span class="dial-label">Break &middot; counts up</span>
+        <div class="dial" id="break-dial">
+          <div class="ring">
+            <svg viewBox="0 0 196 196">
+              <circle class="track" cx="98" cy="98" r="90"/>
+              <circle class="prog" id="break-ring-prog" cx="98" cy="98" r="90"/>
+            </svg>
+          </div>
+          <div class="face">
+            <span class="time" id="break-time">00:00:00</span>
+            <span class="caption">elapsed</span>
+          </div>
+        </div>
+        <button class="toggle-btn" id="break-toggle" type="button">Take a break</button>
+      </div>
+    </div>
+
+    <div class="reset-row">
+      <button class="link-btn" id="reset-week-btn" type="button">Reset this week's progress</button>
+    </div>
+
+    <div class="goals-wrap">
+      <div class="goals-card">
+        <label for="goals-box">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 20h16M4 20V4h10l6 6v10" stroke="#ff4b26" stroke-width="1.6"/></svg>
+          Goals for this session
+        </label>
+        <textarea id="goals-box" placeholder="What are you aiming to get through today? e.g. finish tutorial 4 exercises, review lecture 6 slides, start the assignment spec..."></textarea>
+        <div class="save-hint" id="save-hint">&nbsp;</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  const TOPICS = [
+    {
+      code:'COMP10002',
+      name:'Foundations of Algorithms',
+      visual: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle class="accent-stroke" cx="60" cy="16" r="7" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="30" cy="52" r="7" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="90" cy="52" r="7" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="14" cy="90" r="6" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="46" cy="90" r="6" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="74" cy="90" r="6" stroke-width="1.6"/>
+        <circle class="accent-stroke" cx="106" cy="90" r="6" stroke-width="1.6"/>
+        <path class="accent-stroke" d="M60 23 L30 45 M60 23 L90 45 M30 59 L14 84 M30 59 L46 84 M90 59 L74 84 M90 59 L106 84" stroke-width="1.2" opacity="0.85"/>
+      </svg>`
+    },
+    {
+      code:'COMP20008',
+      name:'Elements of Data Processing',
+      visual: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="accent-stroke" d="M10 105 H110" stroke-width="1.2" opacity="0.6"/>
+        <path class="accent-stroke" d="M10 105 V15" stroke-width="1.2" opacity="0.6"/>
+        <circle class="accent-stroke" cx="28" cy="80" r="3.2" stroke-width="1.4"/>
+        <circle class="accent-stroke" cx="44" cy="60" r="3.2" stroke-width="1.4"/>
+        <circle class="accent-stroke" cx="58" cy="70" r="3.2" stroke-width="1.4"/>
+        <circle class="accent-stroke" cx="72" cy="42" r="3.2" stroke-width="1.4"/>
+        <circle class="accent-stroke" cx="88" cy="50" r="3.2" stroke-width="1.4"/>
+        <circle class="accent-stroke" cx="100" cy="26" r="3.2" stroke-width="1.4"/>
+        <path class="accent-stroke" d="M20 92 L102 24" stroke-width="1.4" stroke-dasharray="3 4"/>
+      </svg>`
+    },
+    {
+      code:'INFO20003',
+      name:'Database Systems',
+      visual: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse class="accent-stroke" cx="60" cy="26" rx="34" ry="10" stroke-width="1.6"/>
+        <path class="accent-stroke" d="M26 26 V70 C26 76 41 81 60 81 C79 81 94 76 94 70 V26" stroke-width="1.6"/>
+        <path class="accent-stroke" d="M26 48 C26 54 41 59 60 59 C79 59 94 54 94 48" stroke-width="1.4" opacity="0.8"/>
+        <text x="60" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#ff4b26" opacity="0.85">SELECT *</text>
+      </svg>`
+    },
+    {
+      code:'MAST10010',
+      name:'Applications of Calculus',
+      visual: `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="accent-stroke" d="M8 60 H112" stroke-width="1" opacity="0.5"/>
+        <path class="accent-stroke" d="M60 8 V112" stroke-width="1" opacity="0.5"/>
+        <path class="accent-stroke" d="M12 84 C32 20 48 20 60 60 C72 100 88 100 108 36" stroke-width="1.8"/>
+        <text x="60" y="30" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="18" fill="#ff4b26">&#8747;</text>
+      </svg>`
+    }
+  ];
+
+  const STUDY_GOAL_SEC = 10 * 3600;
+
+  const topicList = document.getElementById('topic-list');
+  const pageSelect = document.getElementById('page-select');
+  const pageStudy = document.getElementById('page-study');
+  const backBtn = document.getElementById('back-btn');
+  const studyTopicLabel = document.getElementById('study-topic-label');
+  const studyTopicBig = document.getElementById('study-topic-big');
+  const studyDial = document.getElementById('study-dial');
+  const breakDial = document.getElementById('break-dial');
+  const studyTimeEl = document.getElementById('study-time');
+  const breakTimeEl = document.getElementById('break-time');
+  const studyToggle = document.getElementById('study-toggle');
+  const breakToggle = document.getElementById('break-toggle');
+  const resetWeekBtn = document.getElementById('reset-week-btn');
+  const goalsBox = document.getElementById('goals-box');
+  const saveHint = document.getElementById('save-hint');
+  const studyRingProg = document.getElementById('study-ring-prog');
+  const breakRingProg = document.getElementById('break-ring-prog');
+  const seeBelowBtn = document.getElementById('see-below-btn');
+  const resetAllBtn = document.getElementById('reset-all-btn');
+
+  // ---------- storage layer ----------
+  // Uses the Claude artifact storage API when available (persists across
+  // sessions inside claude.ai), and transparently falls back to the
+  // browser's own localStorage otherwise (file opened directly, or hosted
+  // on a normal site like GitHub Pages). Either way, progress actually saves.
+  const hasArtifactStorage = (typeof window.storage !== 'undefined')
+    && window.storage
+    && typeof window.storage.get === 'function'
+    && typeof window.storage.set === 'function';
+
+  async function storageGetRaw(key){
+    if(hasArtifactStorage){
+      try{
+        const res = await window.storage.get(key, false);
+        return res ? res.value : null;
+      }catch(e){
+        return null;
+      }
+    }
+    try{
+      return window.localStorage.getItem(key);
+    }catch(e){
+      return null;
+    }
+  }
+
+  async function storageSetRaw(key, value){
+    if(hasArtifactStorage){
+      try{
+        await window.storage.set(key, value, false);
+        return true;
+      }catch(e){
+        console.error('artifact storage set failed', e);
+        return false;
+      }
+    }
+    try{
+      window.localStorage.setItem(key, value);
+      return true;
+    }catch(e){
+      console.error('localStorage set failed', e);
+      return false;
+    }
+  }
+
+  const RING_R = 90;
+  const RING_C = 2 * Math.PI * RING_R;
+  [studyRingProg, breakRingProg].forEach(el => {
+    el.style.strokeDasharray = RING_C.toFixed(1);
+  });
+
+  let currentCode = null;
+  let state = null;
+  let tickHandle = null;
+  let saveDebounce = null;
+
+  function defaultState(){
+    return { studyRemaining: STUDY_GOAL_SEC, breakElapsed: 0, goals: '', active: null };
+  }
+
+  function fmt(totalSeconds){
+    const s = Math.max(0, Math.floor(totalSeconds));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    const pad = n => String(n).padStart(2, '0');
+    return pad(h) + ':' + pad(m) + ':' + pad(sec);
+  }
+
+  async function loadState(code){
+    const raw = await storageGetRaw('topic:' + code);
+    if(raw){
+      try{
+        const parsed = JSON.parse(raw);
+        return Object.assign(defaultState(), parsed);
+      }catch(e){ /* corrupted entry, fall through to default */ }
+    }
+    return defaultState();
+  }
+
+  async function saveState(code, st, immediate){
+    const payload = JSON.stringify(st);
+    const doSave = () => storageSetRaw('topic:' + code, payload);
+    if(immediate){ await doSave(); return; }
+    clearTimeout(saveDebounce);
+    saveDebounce = setTimeout(doSave, 600);
+  }
+
+  function buildList(){
+    topicList.innerHTML = '';
+    TOPICS.forEach((t, i) => {
+      const idx = String(i + 1).padStart(2, '0');
+      const row = document.createElement('button');
+      row.className = 'topic-row';
+      row.type = 'button';
+      row.innerHTML =
+        '<div class="topic-text">' +
+          '<div class="topic-idx-row"><span class="topic-idx">' + idx + '</span><span class="topic-date">weekly &middot; 10h goal</span></div>' +
+          '<div class="topic-code">' + t.code + '</div>' +
+          '<div class="topic-name">' + t.name + '</div>' +
+          '<div class="topic-progress">' +
+            '<span class="track"><span class="fill" id="fill-' + t.code + '"></span></span>' +
+            '<span class="lbl" id="label-' + t.code + '">&mdash; / 10h</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="topic-visual">' + t.visual + '<span class="view-ring">start</span></div>';
+      row.addEventListener('click', () => openTopic(t.code, t.name));
+      topicList.appendChild(row);
+      refreshRowProgress(t.code);
+    });
+  }
+
+  async function refreshRowProgress(code){
+    const st = await loadState(code);
+    const done = STUDY_GOAL_SEC - st.studyRemaining;
+    const hours = done / 3600;
+    const pct = Math.min(100, Math.max(0, (done / STUDY_GOAL_SEC) * 100));
+    const fill = document.getElementById('fill-' + code);
+    const label = document.getElementById('label-' + code);
+    if(fill) fill.style.width = pct.toFixed(1) + '%';
+    if(label) label.textContent = hours.toFixed(1) + ' / 10h';
+  }
+
+  async function openTopic(code, name){
+    currentCode = code;
+    state = await loadState(code);
+    studyTopicLabel.textContent = code;
+    studyTopicBig.textContent = name;
+    goalsBox.value = state.goals || '';
+    render();
+    pageSelect.style.display = 'none';
+    pageStudy.style.display = 'block';
+    window.scrollTo(0, 0);
+    startTickLoop();
+  }
+
+  function closeTopic(){
+    stopTickLoop();
+    saveState(currentCode, state, true);
+    pageStudy.style.display = 'none';
+    pageSelect.style.display = 'block';
+    window.scrollTo(0, 0);
+    refreshRowProgress(currentCode);
+    currentCode = null;
+    state = null;
+  }
+
+  function setRing(el, fraction){
+    const clamped = Math.min(1, Math.max(0, fraction));
+    const offset = RING_C * (1 - clamped);
+    el.style.strokeDashoffset = offset.toFixed(1);
+  }
+
+  function render(){
+    studyTimeEl.textContent = fmt(state.studyRemaining);
+    breakTimeEl.textContent = fmt(state.breakElapsed);
+
+    setRing(studyRingProg, state.studyRemaining / STUDY_GOAL_SEC);
+    setRing(breakRingProg, (state.breakElapsed % 3600) / 3600);
+
+    const studyRunning = state.active === 'study';
+    const breakRunning = state.active === 'break';
+
+    studyDial.classList.toggle('active', studyRunning);
+    breakDial.classList.toggle('active', breakRunning);
+
+    studyToggle.textContent = studyRunning ? 'Pause study' : 'Start study';
+    breakToggle.textContent = breakRunning ? 'End break' : 'Take a break';
+
+    studyToggle.classList.toggle('is-running', studyRunning);
+    breakToggle.classList.toggle('is-running', breakRunning);
+
+    if(state.studyRemaining <= 0 && state.active === 'study'){
+      state.active = null;
+    }
+  }
+
+  function startTickLoop(){
+    stopTickLoop();
+    tickHandle = setInterval(tick, 1000);
+  }
+  function stopTickLoop(){
+    if(tickHandle){ clearInterval(tickHandle); tickHandle = null; }
+  }
+
+  let ticksSinceSave = 0;
+  function tick(){
+    if(!state) return;
+    if(state.active === 'study'){
+      if(state.studyRemaining > 0){
+        state.studyRemaining -= 1;
+      }
+      if(state.studyRemaining <= 0){
+        state.studyRemaining = 0;
+        state.active = null;
+      }
+    } else if(state.active === 'break'){
+      state.breakElapsed += 1;
+    }
+    render();
+    ticksSinceSave++;
+    if(ticksSinceSave >= 5){
+      ticksSinceSave = 0;
+      saveState(currentCode, state, false);
+    }
+  }
+
+  studyToggle.addEventListener('click', () => {
+    if(!state) return;
+    state.active = (state.active === 'study') ? null : 'study';
+    render();
+    saveState(currentCode, state, true);
+  });
+
+  breakToggle.addEventListener('click', () => {
+    if(!state) return;
+    state.active = (state.active === 'break') ? null : 'break';
+    render();
+    saveState(currentCode, state, true);
+  });
+
+  resetWeekBtn.addEventListener('click', () => {
+    if(!state) return;
+    const ok = confirm('Reset study and break timers for ' + currentCode + ' back to 10:00:00 and 00:00:00? Your goals text will be kept.');
+    if(!ok) return;
+    state.studyRemaining = STUDY_GOAL_SEC;
+    state.breakElapsed = 0;
+    state.active = null;
+    render();
+    saveState(currentCode, state, true);
+  });
+
+  goalsBox.addEventListener('input', () => {
+    if(!state) return;
+    state.goals = goalsBox.value;
+    saveHint.textContent = 'saving...';
+    clearTimeout(saveDebounce);
+    saveDebounce = setTimeout(async () => {
+      await saveState(currentCode, state, true);
+      saveHint.textContent = 'saved';
+      setTimeout(() => { if(saveHint.textContent === 'saved') saveHint.textContent = ''; }, 1500);
+    }, 600);
+  });
+
+  backBtn.addEventListener('click', closeTopic);
+
+  seeBelowBtn.addEventListener('click', () => {
+    topicList.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  resetAllBtn.addEventListener('click', async () => {
+    const ok = confirm('Reset ALL four topics back to 10:00:00 study, 00:00:00 break, and clear all goals text? This cannot be undone.');
+    if(!ok) return;
+    for(const t of TOPICS){
+      const fresh = defaultState();
+      await storageSetRaw('topic:' + t.code, JSON.stringify(fresh));
+      if(currentCode === t.code){
+        state = fresh;
+        goalsBox.value = '';
+        render();
+      }
+    }
+    TOPICS.forEach(t => refreshRowProgress(t.code));
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if(currentCode && state){
+      saveState(currentCode, state, true);
+    }
+  });
+
+  buildList();
+})();
+</script>
+
+</body>
+</html>
